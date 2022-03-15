@@ -1,16 +1,4 @@
-require 'rubygems'
-require 'bundler'
-Bundler.setup(:default, :ci)
-
-require 'json'
-require 'fastimage'
-require 'prawn'
-require 'prawn/measurement_extensions'
-
-DEFAULT_FILE_NAME = './untitled.pdf'
-
-require_relative './dimensions.rb'
-require_relative './insert.rb'
+require './lib/include.rb'
 
 insert = Insert.new(PERSONAL)
 insert.outlines

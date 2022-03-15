@@ -1,3 +1,5 @@
+DEFAULT_FILE_NAME = './untitled.pdf'
+
 class Insert
     def initialize(dimensions = PERSONAL, double = true)
         @dimensions, @double = dimensions, double
