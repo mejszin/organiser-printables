@@ -32,8 +32,22 @@ class Insert
         end
     end
 
-    def image(path, x, y, w, h)
-        # TODO
+    def image(path, x, y, w, h = nil)
+        unless File.file?(path)
+            puts "** Can't find image #{path}"
+            return
+        end
+        if h == nil # Auto-scale
+            image_w, image_h = FastImage.size(path)
+            h = w * (image_h.to_f / image_w.to_f)
+            puts "** Original image: #{image_w} x #{image_h}px"
+            puts "** Scaled image: #{w.floor} x #{h.floor}mm"
+        end
+        @pdf.image path, :at => [left + x, top - y], :width => w, :height => h
+        if @double
+            x = double_left + x
+            @pdf.image path, :at => [x, top - y], :width => w, :height => h
+        end
     end
 
     def top
