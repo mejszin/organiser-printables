@@ -38,37 +38,46 @@ class Insert
         end
     end
 
+    def ratio_columns(ratios)
+        col_widths = ratios.map { |ratio| ratio * (width / ratios.sum) }
+        @pdf.stroke do
+            col_left = 0
+            for col in (0...ratios.length) do
+                x, y = left + col_left, top
+                @pdf.rectangle([x, y], col_widths[col], height)
+                x = double_left + col_left
+                @pdf.rectangle([x, y], col_widths[col], height) if @double
+                col_left += col_widths[col]
+            end
+        end
+    end
+
+    def ratio_rows(ratios)
+        row_heights = ratios.map { |ratio| ratio * (height / ratios.sum) }
+        @pdf.stroke do
+            row_top = 0
+            for row in (0...ratios.length) do
+                x, y = left, top - row_top
+                @pdf.rectangle([x, y], width, row_heights[row])
+                x = double_left
+                @pdf.rectangle([x, y], width, row_heights[row]) if @double
+                row_top += row_heights[row]
+            end
+        end
+    end
+
+    
     def columns(count)
-        col_width = width / count
-        @pdf.stroke do
-            @pdf.line_width = (0.1).mm
-            for column in (0...count) do
-                x, y = left + (column * col_width), top
-                @pdf.rectangle([x, y], col_width, height)
-                x = double_left + (column * col_width)
-                @pdf.rectangle([x, y], col_width, height) if @double
-            end
-        end
+        ratio_columns(Array.new(count) { 1 })
     end
 
-    def rows(count, double_header = false)
-        row_height = height / count
-        @pdf.stroke do
-            for row in (0...count) do
-                unless double_header && row == 1
-                    x, y = left, top - (row * row_height)
-                    height = row_height * ((double_header && row == 0) ? 2 : 1)
-                    @pdf.rectangle([x, y], width, height)
-                    x = double_left
-                    @pdf.rectangle([x, y], width, height) if @double
-                end
-            end
-        end
+    def rows(count)
+        ratio_rows(Array.new(count) { 1 })
     end
 
-    def grid(column_count, row_count, double_header = false)
+    def grid(column_count, row_count)
         columns(column_count)
-        rows(row_count, double_header)
+        rows(row_count)
     end
 
     def save_to_file(file_name = DEFAULT_FILE_NAME)

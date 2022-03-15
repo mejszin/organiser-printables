@@ -14,5 +14,6 @@ require_relative './insert.rb'
 insert = Insert.new(FILOFAX_PERSONAL)
 insert.draw_outlines
 # insert.grid(4, 12, true)
-insert.rows(12, true)
+insert.ratio_columns([1, 2, 3, 1, 2, 3])
+insert.rows(4)
 insert.save_to_file
