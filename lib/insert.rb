@@ -9,7 +9,7 @@ class Insert
         @double_spacing = 20.mm
     end
 
-    def watermark(path)
+    def logo(path)
         unless File.file?(path)
             puts "** Can't find watermark image #{path}"
             return
@@ -17,7 +17,7 @@ class Insert
         image_w, image_h = FastImage.size(path)
         h = @hole_margin - 6.mm
         w = h * (image_w.to_f / image_h.to_f)
-        puts "** Watermark image: #{image_w} x #{image_h}px"
+        puts "** Original image: #{image_w} x #{image_h}px"
         puts "** Scaled image: #{w.floor} x #{h.floor}mm"
         x, y = left(false) + 3.mm, (top - w) - (height - w) / 2
         @pdf.rotate(90, :origin => [x, y]) do
