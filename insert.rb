@@ -1,11 +1,33 @@
-
 class Insert
     def initialize(dimensions = PERSONAL, double = true)
         @dimensions, @double = dimensions, double
         @pdf = Prawn::Document.new(:page_size => A4.landscape.mm, :margin => 0)
         @print_margin = 20.mm
-        @hole_clearing = 11.mm
+        @hole_margin = 11.mm
         @double_spacing = 20.mm
+    end
+
+    def watermark(path)
+        unless File.file?(path)
+            puts "** Can't find watermark image #{path}"
+            return
+        end
+        image_w, image_h = FastImage.size(path)
+        h = @hole_margin - 6.mm
+        w = h * (image_w.to_f / image_h.to_f)
+        puts "** Watermark image: #{image_w} x #{image_h}px"
+        puts "** Scaled image: #{w.floor} x #{h.floor}mm"
+        x, y = left(false) + 3.mm, (top - w) - (height - w) / 2
+        @pdf.rotate(90, :origin => [x, y]) do
+            @pdf.image path, :at => [x, y], :width => w, :height => h
+          # @pdf.rectangle([x, y], h, -w)
+        end
+        if @double
+            x = double_left(false) + 3.mm
+            @pdf.rotate(90, :origin => [x, y]) do
+                @pdf.image path, :at => [x, y], :width => w, :height => h
+            end
+        end
     end
 
     def top
@@ -13,7 +35,7 @@ class Insert
     end
 
     def left(with_clearing = true)
-        return @print_margin + (with_clearing ? @hole_clearing : 0)
+        return @print_margin + (with_clearing ? @hole_margin : 0)
     end
 
     def double_left(with_clearing = true)
@@ -21,14 +43,14 @@ class Insert
     end
 
     def width(with_clearing = true)
-        return @dimensions.width.mm - (with_clearing ? @hole_clearing : 0)
+        return @dimensions.width.mm - (with_clearing ? @hole_margin : 0)
     end
 
     def height
         return @dimensions.height.mm
     end
     
-    def draw_outlines
+    def outlines
         @pdf.stroke do
             @pdf.line_width = (0.1).mm
             x, y = left(false), top
@@ -41,6 +63,7 @@ class Insert
     def ratio_columns(ratios)
         col_widths = ratios.map { |ratio| ratio * (width / ratios.sum) }
         @pdf.stroke do
+            @pdf.line_width = (0.1).mm
             col_left = 0
             for col in (0...ratios.length) do
                 x, y = left + col_left, top
@@ -55,6 +78,7 @@ class Insert
     def ratio_rows(ratios)
         row_heights = ratios.map { |ratio| ratio * (height / ratios.sum) }
         @pdf.stroke do
+            @pdf.line_width = (0.1).mm
             row_top = 0
             for row in (0...ratios.length) do
                 x, y = left, top - row_top
@@ -66,7 +90,6 @@ class Insert
         end
     end
 
-    
     def columns(count)
         ratio_columns(Array.new(count) { 1 })
     end
