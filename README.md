@@ -2,6 +2,7 @@
 Scripts for generating paper planner/organiser printable inserts
 
 ```bash
+bundle install
 rake example
 ```
 
