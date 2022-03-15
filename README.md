@@ -12,6 +12,6 @@ task :example do
     insert.logo("./logo.png")
     insert.ratio_rows([2] + [1] * 12)
     insert.columns(4)
-    insert.save_to_file
+    insert.save_to_file("./table.pdf")
 end
 ```
