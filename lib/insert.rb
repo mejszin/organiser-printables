@@ -32,6 +32,10 @@ class Insert
         end
     end
 
+    def image(path, x, y, w, h)
+        # TODO
+    end
+
     def top
         return A4.landscape.height.mm - @print_margin
     end
