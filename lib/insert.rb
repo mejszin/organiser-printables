@@ -1,7 +1,7 @@
 DEFAULT_FILE_NAME = './untitled.pdf'
 
 class Insert
-    def initialize(dimensions = PERSONAL, double = true)
+    def initialize(dimensions = FILOFAX_PERSONAL, double = true)
         @dimensions, @double = dimensions, double
         @pdf = Prawn::Document.new(:page_size => A4.landscape.mm, :margin => 0)
         @print_margin = 20.mm
@@ -93,11 +93,11 @@ class Insert
     end
 
     def columns(count)
-        ratio_columns(Array.new(count) { 1 })
+        ratio_columns([1] * count)
     end
 
     def rows(count)
-        ratio_rows(Array.new(count) { 1 })
+        ratio_rows([1] * count)
     end
 
     def grid(column_count, row_count)

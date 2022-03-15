@@ -25,10 +25,9 @@ class Dimension
 end
 
 A4 = Dimension.new(*dim_data["a4"].values)
-POCKET = Dimension.new(*dim_data["pocket"].values)
-PERSONAL = Dimension.new(*dim_data["personal"].values)
-STANDARD = Dimension.new(*dim_data["standard"].values)
-FILOFAX_PERSONAL = PERSONAL
+FILOFAX_POCKET = Dimension.new(*dim_data["pocket"].values)
+FILOFAX_PERSONAL = Dimension.new(*dim_data["personal"].values)
+FILOFAX_STANDARD = Dimension.new(*dim_data["standard"].values)
 
 hole_file = File.open('./holes.json')
 hole_data = JSON.load(hole_file)
@@ -42,4 +41,4 @@ class Holes
     end
 end
 
-PERSONAL_HOLES = Holes.new(*hole_data["personal"].values)
+FILOFAX_PERSONAL_HOLES = Holes.new(*hole_data["personal"].values)
