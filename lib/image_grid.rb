@@ -17,14 +17,12 @@ class Insert
         for c in (0...cols) do
             for r in (0...rows) do
                 x, y = left + l + (c * area_w), top - t - (r * area_h)
-                xy = [x + (area_w - img_w) / 2, y - (area_h - img_h) / 2]
-                args = [path, :at => xy, :width => img_w, :height => img_h]
-                @pdf.image(*args)
+                x, y = x + (area_w - img_w) / 2, y - (area_h - img_h) / 2
+                image_at(path, x, y, img_w, img_h)
                 if @double
                     x = double_left + l + (c * area_w)
-                    xy = [x + (area_w - img_w) / 2, y - (area_h - img_h) / 2]
-                    args = [path, :at => xy, :width => img_w, :height => img_h]
-                    @pdf.image(*args)
+                    x, y = x + (area_w - img_w) / 2, y - (area_h - img_h) / 2
+                    image_at(path, x, y, img_w, img_h)
                 end
             end
         end

@@ -6,6 +6,7 @@ require 'json'
 require 'fastimage'
 require 'prawn'
 require 'prawn/measurement_extensions'
+require 'prawn-svg'
 
 def prawn_clr(clr)
     return clr[1, 6]

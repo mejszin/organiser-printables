@@ -20,8 +20,8 @@ end
 task :heart_grid do
     insert = Insert.new(FILOFAX_PERSONAL)
     insert.outlines(FILOFAX_PERSONAL_HOLES)
-    insert.logo("./images/projective.png")
-    insert.image_grid("./images/heart.png", 8, 15, 0, 15, 80, 150)
+    insert.logo("./images/projective.svg")
+    insert.image_grid("./images/heart.svg", 8, 15, 0, 15, 80, 150)
     insert.save_to_file("./example.pdf")
 end
 
@@ -55,7 +55,7 @@ end
 task :cornell do
     insert = Insert.new(FILOFAX_PERSONAL)
     insert.outlines(FILOFAX_PERSONAL_HOLES)
-    insert.logo("images/projective.png")
+    insert.logo("images/projective.svg")
     width, left, top, line, margin = insert.dimensions.width - 18, 2, 6, 5, 4
     insert.grid(2, 1, left, top, width, line)
     insert.grid(3, 1, left, top + line, width, line)

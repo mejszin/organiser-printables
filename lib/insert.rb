@@ -22,11 +22,8 @@ class Insert
             puts "** Original image: #{image_w} x #{image_h}px"
             puts "** Scaled image: #{w.floor} x #{h.floor}mm"
         end
-        @pdf.image path, :at => [left + l, top - t], :width => w, :height => h
-        if @double
-            x = double_left + l
-            @pdf.image path, :at => [x, top - t], :width => w, :height => h
-        end
+        image_at(path, left + l, top - t, w, h)
+        image_at(path, double_left + l, top - t, w, h) if @double
     end
 
     def top
@@ -48,7 +45,7 @@ class Insert
     def height
         return @dimensions.height.mm
     end
-    
+
     def outlines(hole_data = nil)
         @pdf.stroke do
             @pdf.line_width = (0.1).mm
@@ -71,7 +68,7 @@ class Insert
             end
         end
     end
-    
+
     def text(caption, l, t, w, h, size = 32, clr = nil)
         @pdf.fill_color = clr == nil ? prawn_clr("#000000") : prawn_clr(clr)
         args = { 
