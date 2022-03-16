@@ -1,6 +1,8 @@
 DEFAULT_FILE_NAME = './untitled.pdf'
 
 class Insert
+    attr_reader :dimensions, :hole_margin
+    
     def initialize(dimensions = FILOFAX_PERSONAL, double = true)
         @dimensions, @double = dimensions, double
         @pdf = Prawn::Document.new(:page_size => A4.landscape.mm, :margin => 0)
@@ -9,30 +11,7 @@ class Insert
         @double_spacing = 20.mm
     end
 
-    def logo(path)
-        unless File.file?(path)
-            puts "** Can't find watermark image #{path}"
-            return
-        end
-        image_w, image_h = FastImage.size(path)
-        h = @hole_margin - 6.mm
-        w = h * (image_w.to_f / image_h.to_f)
-        puts "** Original image: #{image_w} x #{image_h}px"
-        puts "** Scaled image: #{w.floor} x #{h.floor}mm"
-        x, y = left(false) + 3.mm, (top - w) - (height - w) / 2
-        @pdf.rotate(90, :origin => [x, y]) do
-            @pdf.image path, :at => [x, y], :width => w, :height => h
-          # @pdf.rectangle([x, y], h, -w)
-        end
-        if @double
-            x = double_left(false) + 3.mm
-            @pdf.rotate(90, :origin => [x, y]) do
-                @pdf.image path, :at => [x, y], :width => w, :height => h
-            end
-        end
-    end
-
-    def image(path, x, y, w, h = nil)
+    def image(path, l, t, w, h = nil)
         unless File.file?(path)
             puts "** Can't find image #{path}"
             return
@@ -43,10 +22,10 @@ class Insert
             puts "** Original image: #{image_w} x #{image_h}px"
             puts "** Scaled image: #{w.floor} x #{h.floor}mm"
         end
-        @pdf.image path, :at => [left + x, top - y], :width => w, :height => h
+        @pdf.image path, :at => [left + l, top - t], :width => w, :height => h
         if @double
-            x = double_left + x
-            @pdf.image path, :at => [x, top - y], :width => w, :height => h
+            x = double_left + l
+            @pdf.image path, :at => [x, top - t], :width => w, :height => h
         end
     end
 
@@ -80,47 +59,50 @@ class Insert
         end
     end
 
-    def ratio_columns(ratios)
-        col_widths = ratios.map { |ratio| ratio * (width / ratios.sum) }
-        @pdf.stroke do
-            @pdf.line_width = (0.1).mm
-            col_left = 0
-            for col in (0...ratios.length) do
-                x, y = left + col_left, top
-                @pdf.rectangle([x, y], col_widths[col], height)
-                x = double_left + col_left
-                @pdf.rectangle([x, y], col_widths[col], height) if @double
-                col_left += col_widths[col]
+    def holes(data)
+        for position in data.positions do
+            @pdf.stroke do
+                @pdf.line_width = (0.1).mm
+                x, y = left(false) + data.inside.mm, top - position.mm
+                @pdf.circle([x, y], data.width.to_f.mm / 2)
+                x = double_left(false) + data.inside.mm
+                @pdf.circle([x, y], data.width.to_f.mm / 2) if @double
             end
         end
     end
+    
+    def text(caption, l, t, w, h, size = 32, clr = nil)
+        @pdf.fill_color = clr == nil ? prawn_clr("#000000") : prawn_clr(clr)
+        args = { 
+            :at => [left + l.mm, top - t.mm], 
+            :width => w.mm, :height => h.mm, 
+            :style => :normal, :overflow => :shrink_to_fit,
+            :valign => :center, :align => :center,
+            :size => size, :min_font_size => 4,
+            :inline_format => true
+        }
+        @pdf.text_box(caption, args)
+        args[:at] = [double_left + l.mm, top - t.mm]
+        @pdf.text_box(caption, args) if @double
+    end
 
-    def ratio_rows(ratios)
-        row_heights = ratios.map { |ratio| ratio * (height / ratios.sum) }
-        @pdf.stroke do
-            @pdf.line_width = (0.1).mm
-            row_top = 0
-            for row in (0...ratios.length) do
-                x, y = left, top - row_top
-                @pdf.rectangle([x, y], width, row_heights[row])
-                x = double_left
-                @pdf.rectangle([x, y], width, row_heights[row]) if @double
-                row_top += row_heights[row]
+    def box(l, t, w, h, clr = nil)
+        @pdf.fill_color = clr == nil ? prawn_clr("#FFFFFF") : prawn_clr(clr)
+        @pdf.line_width = (0.1).mm
+        x, y = left + l.mm, top - t.mm
+        unless clr == nil
+            @pdf.fill_and_stroke_rectangle([x, y], w.mm, h.mm)
+        else
+            @pdf.stroke_rectangle([x, y], w.mm, h.mm)
+        end
+        if @double
+            x = double_left + l.mm
+            unless clr == nil
+                @pdf.fill_and_stroke_rectangle([x, y], w.mm, h.mm)
+            else
+                @pdf.stroke_rectangle([x, y], w.mm, h.mm)
             end
         end
-    end
-
-    def columns(count)
-        ratio_columns([1] * count)
-    end
-
-    def rows(count)
-        ratio_rows([1] * count)
-    end
-
-    def grid(column_count, row_count)
-        columns(column_count)
-        rows(row_count)
     end
 
     def save_to_file(file_name = DEFAULT_FILE_NAME)
