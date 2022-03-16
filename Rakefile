@@ -39,15 +39,15 @@ end
 task :project_outline do
     insert = Insert.new(FILOFAX_PERSONAL)
     insert.outlines(FILOFAX_PERSONAL_HOLES)
-    insert.logo("./images/projective.png")
+    insert.logo("./images/projective.svg")
     ratio = [1, 1, 4, 4]
-    width, height, left = insert.dimensions.width - 18, 6, 2
+    width, height, left = insert.dimensions.width - 18, 5, 2
     for top in [6, 61, 116] do
         insert.box(left, top, width, height)
         insert.box(left, top + height, width, height, "#D0E1F5")
         insert.ratio_columns(ratio, left, top, width, height)
-        insert.rows(6, left, top + height * 2, width, height * 6)
-        insert.ratio_columns(ratio, left, top + height * 2, width, height * 6)
+        insert.rows(8, left, top + height * 2, width, height * 8)
+        insert.ratio_columns(ratio, left, top + height * 2, width, height * 8)
     end
     insert.save_to_file("./example.pdf")
 end
