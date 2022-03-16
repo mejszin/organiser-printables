@@ -20,7 +20,7 @@ end
 task :heart_grid do
     insert = Insert.new(FILOFAX_PERSONAL)
     insert.outlines(FILOFAX_PERSONAL_HOLES)
-    insert.logo("./images/logo.png")
+    insert.logo("./images/projective.png")
     insert.image_grid("./images/heart.png", 8, 15, 0, 15, 80, 150)
     insert.save_to_file("./example.pdf")
 end
@@ -39,13 +39,28 @@ end
 task :project_outline do
     insert = Insert.new(FILOFAX_PERSONAL)
     insert.outlines(FILOFAX_PERSONAL_HOLES)
-    ratio = [1, 1, 2, 2]
+    insert.logo("./images/projective.png")
+    ratio = [1, 1, 4, 4]
     width, height, left = insert.dimensions.width - 18, 6, 2
     for top in [6, 61, 116] do
-        insert.rows(2, left, top, width, height * 2)
+        insert.box(left, top, width, height)
+        insert.box(left, top + height, width, height, "#D0E1F5")
         insert.ratio_columns(ratio, left, top, width, height)
         insert.rows(6, left, top + height * 2, width, height * 6)
         insert.ratio_columns(ratio, left, top + height * 2, width, height * 6)
     end
     insert.save_to_file("./example.pdf")
+end
+
+task :cornell do
+    insert = Insert.new(FILOFAX_PERSONAL)
+    insert.outlines(FILOFAX_PERSONAL_HOLES)
+    insert.logo("images/projective.png")
+    width, left, top, line, margin = insert.dimensions.width - 18, 2, 6, 5, 4
+    insert.grid(2, 1, left, top, width, line)
+    insert.grid(3, 1, left, top + line, width, line)
+    insert.grid(2, 1, left, top + line * 2 + margin, width, line * 16)
+    insert.grid(1, 16, left + width.to_f / 2, top + line * 2 + margin, width.to_f / 2, line * 16)
+    insert.box(left, top + line * 18 + margin * 2, width, line * 12.25)
+    insert.save_to_file
 end
