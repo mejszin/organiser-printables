@@ -2,7 +2,7 @@ DEFAULT_FILE_NAME = './untitled.pdf'
 
 class Insert
     attr_reader :dimensions, :hole_margin
-    
+
     def initialize(dimensions = FILOFAX_PERSONAL, double = true)
         @dimensions, @double = dimensions, double
         @pdf = Prawn::Document.new(:page_size => A4.landscape.mm, :margin => 0)
@@ -49,7 +49,7 @@ class Insert
         return @dimensions.height.mm
     end
     
-    def outlines
+    def outlines(hole_data = nil)
         @pdf.stroke do
             @pdf.line_width = (0.1).mm
             x, y = left(false), top
@@ -57,6 +57,7 @@ class Insert
             x = double_left(false)
             @pdf.rectangle([x, y], *@dimensions.mm) if @double
         end
+        holes(hole_data) unless hole_data == nil
     end
 
     def holes(data)
