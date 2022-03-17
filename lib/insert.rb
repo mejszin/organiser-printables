@@ -6,9 +6,8 @@ class Insert
     def initialize(dimensions = FILOFAX_PERSONAL, double = true)
         @dimensions, @double = dimensions, double
         @pdf = Prawn::Document.new(:page_size => A4.landscape.mm, :margin => 0)
-        @print_margin = 20.mm
+        @print_margin = 0.mm
         @hole_margin = 11.mm
-        @double_spacing = 20.mm
     end
 
     def image(path, l, t, w, h = nil)
@@ -35,7 +34,9 @@ class Insert
     end
 
     def double_left(with_clearing = true)
-        return left(with_clearing) + width(false) + @double_spacing
+        x = A4.landscape.width.mm - width(false) - @print_margin
+        return x + (with_clearing ? @hole_margin : 0)
+      # return left(with_clearing) + width(false) + @double_spacing
     end
 
     def width(with_clearing = true)
